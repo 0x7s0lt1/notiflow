@@ -14,7 +14,7 @@ Notiflow is a React Native app that listens to notifications from other apps and
 
 ## Setup
 ```bash
-git clone https://github.com/0x7s0lt1/twfl-notiflow.git
+git clone https://github.com/0x7s0lt1/notiflow.git
 cd notiflow
 yarn install
 npx expo run:android
