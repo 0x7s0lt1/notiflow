@@ -3,7 +3,15 @@ import {Link, useLocalSearchParams, useRouter} from "expo-router";
 import {useEffect, useRef, useState} from "react";
 import StorageItemType from "@/types/storage/StorageItemType";
 import useAlertStorage from "@/hooks/use-alert-storage";
-import {ActivityIndicator, Text, TextInput, ToastAndroid, TouchableOpacity, View} from "react-native";
+import {
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Text,
+    TextInput,
+    ToastAndroid,
+    TouchableOpacity,
+    View
+} from "react-native";
 import AppDetail from "@/types/storage/AppDetailType";
 import RNInstalledApplication from 'react-native-installed-application';
 import {Image} from "expo-image";
@@ -121,7 +129,7 @@ const CreateAlert = () => {
                 { loading && !app ?
                     <ActivityIndicator size="large" />
                     :
-                    <View className="flex flex-col items-center justify-center p-2 gap-4 w-full">
+                    <KeyboardAvoidingView className="flex flex-col items-center justify-center p-2 gap-4 w-full">
 
                         <View className="flex flex-col items-center justify-center w-full gap-2">
                             <Image width={100} height={100} source={{ uri: `data:image/png;base64,${app?.icon}` }}  />
@@ -140,6 +148,7 @@ const CreateAlert = () => {
                                     value={triggerString}
                                     onChangeText={handleTriggerChange}
                                     keyboardType="default"
+                                    placeholderTextColor={"gray"}
                                     autoCapitalize="none"
                                 />
                                 <Text className="text-sm text-gray-500">Place triggers separated by commas</Text>
@@ -154,6 +163,7 @@ const CreateAlert = () => {
                                     inputMode={"url"}
                                     dataDetectorTypes={"link"}
                                     keyboardType="default"
+                                    placeholderTextColor={"gray"}
                                     autoCapitalize="none"
                                 />
                                 <Text className="text-sm text-gray-500">Paste your webhook URL here</Text>
@@ -168,6 +178,7 @@ const CreateAlert = () => {
                                     multiline
                                     numberOfLines={5}
                                     keyboardType="default"
+                                    placeholderTextColor={"gray"}
                                     autoCapitalize="none"
                                 />
                                 <Text className="text-sm text-gray-500">Paste your webhook payload here</Text>
@@ -181,14 +192,12 @@ const CreateAlert = () => {
                             <TouchableOpacity  onPress={onSubmit} className="flex flex-row items-center justify-center p-2 bg-blue-200 rounded-xl w-full border border-gray-500">
                                 <Text>Save</Text>
                             </TouchableOpacity>
-                            <Link  href="/" className="w-full flex flex-row rounded-2xl">
-                                <TouchableOpacity onPress={handleCancel} className="flex flex-row items-center justify-center p-2 bg-red-200 rounded-xl w-full border border-gray-500">
-                                    <Text>Cancel</Text>
-                                </TouchableOpacity>
-                            </Link>
+                            <TouchableOpacity onPress={handleCancel} className="flex flex-row items-center justify-center p-2 bg-red-200 rounded-xl w-full border border-gray-500">
+                                <Text>Cancel</Text>
+                            </TouchableOpacity>
                         </View>
 
-                    </View>
+                    </KeyboardAvoidingView>
 
                 }
             </SafeAreaView>

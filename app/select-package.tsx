@@ -1,5 +1,5 @@
 import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
-import {ActivityIndicator, FlatList, Platform, Switch, Text, TextInput, View} from "react-native";
+import {ActivityIndicator, FlatList, Platform, Pressable, Switch, Text, TextInput, View} from "react-native";
 import {useEffect, useRef, useState} from "react";
 import RNInstalledApplication from 'react-native-installed-application';
 import AppDetail from "@/types/storage/AppDetailType";
@@ -25,6 +25,10 @@ const SelectPackage = () => {
         setIncludeSystemApps(value);
         await fetchApps(value);
 
+    }
+
+    const toggleIncludeSystemApps = () => {
+        setIncludeSystemApps(!includeSystemApps);
     }
 
     useEffect(() => {
@@ -67,21 +71,28 @@ const SelectPackage = () => {
             <SafeAreaView className={"flex flex-col items-center justify-center w-full h-full p-4"}>
 
                 <View className={"w-full my-4 p-2"}>
+                    <View className={"flex flex-row items-center justify-between w-full my-2"}>
+                        <Text>
+                            Search
+                        </Text>
+                        <View className={"flex flex-row items-center justify-end mt-2"}>
+                            <Switch
+                                value={includeSystemApps}
+                                onValueChange={handleIncludeSystemAppsChange}
+                            />
+                            <Pressable onPress={toggleIncludeSystemApps}>
+                                <Text className={"text-xs text-gray-500 ml-1"}>Include system apps</Text>
+                            </Pressable>
+                        </View>
+                    </View>
                     <TextInput
-                        className={"w-full border border-gray-200 rounded-2xl p-2"}
+                        className={"w-full border border-gray-200 text-primary rounded-xl p-2"}
                         onChangeText={handleSearchChange}
                         value={search}
-                        placeholder="Search app..."
+                        placeholder="Type an app name to search..."
+                        placeholderTextColor={"gray"}
                         keyboardType="default"
                     />
-
-                    <View className={"flex flex-row items-center justify-start w-full mt-2"}>
-                        <Switch
-                            value={includeSystemApps}
-                            onValueChange={handleIncludeSystemAppsChange}
-                        />
-                        <Text className={"text-xs text-gray-500 ml-2"}>Include system apps</Text>
-                    </View>
 
                 </View>
 

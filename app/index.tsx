@@ -1,4 +1,4 @@
-import {Text, View, FlatList, Alert, TouchableOpacity, StyleSheet, ToastAndroid, ScrollView} from "react-native";
+import {Text, View, FlatList, Alert, TouchableOpacity, ToastAndroid, ScrollView} from "react-native";
 import {useEffect, useRef} from "react";
 import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
 import {Link} from "expo-router";
@@ -7,11 +7,13 @@ import {Play, Pause} from "lucide-react-native";
 import {Image} from "expo-image";
 import {AlertStatus} from "@/types/AlertStatus";
 import Listener from "@/components/Listener";
+import {useIsFocused} from "@react-navigation/native";
 
 export default function Index() {
 
     let storageFetched = useRef<boolean>(false);
 
+    const isFocused = useIsFocused();
     const { storage, fetchStorage, setStatus } = useAlertStorage();
 
 
@@ -47,7 +49,11 @@ export default function Index() {
 
         }
 
-    },[fetchStorage])
+        return () => {
+            storageFetched.current = false;
+        }
+
+    },[fetchStorage, isFocused])
 
   return (
       <SafeAreaProvider>
@@ -63,12 +69,12 @@ export default function Index() {
                       data={storage}
                       renderItem={ (i: any) =>  {
                           return (
-                              <View className={`${i.index === storage.length  ? "mb-16" : ""} flex flex-col items-center justify-between my-2 p-2 border border-gray-200 rounded-2xl max-w-full w-full shadow-xl`}>]
+                              <View className={`${i.index === storage.length  ? "mb-16" : ""} flex flex-col items-center justify-between my-2 p-2 border border-gray-200 rounded-2xl max-w-full w-full shadow-xl`}>
 
                                   <View className={"flex flex-row items-center justify-between w-full"}>
                                       <Link href={`/alert/${i.item.id}`} className={"flex flex-row items-center gap-4"} >
                                           <View className={"flex flex-row items-center gap-2 text-md font-bold"}>
-                                              <Image className={"mx-2"} width={54} height={54} source={{uri: `data:image/png;base64,${i.item.targetPackage.icon}`}} />
+                                              <Image className={"mx-2"} width={45} height={45} source={{uri: `data:image/png;base64,${i.item.targetPackage.icon}`}} />
                                               <View>
                                                   <Text className={"text-xl font-bold"}>{i.item.targetPackage.appName}</Text>
                                                   <Text className={"text-xs text-muted-foreground"}>{i.item.targetPackage.packageName}</Text>
@@ -98,7 +104,9 @@ export default function Index() {
                                           {
                                               i.item.triggers.map((trigger: any, index: number) => {
                                                   return (
-                                                      <Text key={index} className={"text-xs text-muted-foreground border border-gray-200 px-2 mx-1.5 rounded-xl"}>{trigger}</Text>
+                                                      <Text key={index} className={"text-xs text-muted-foreground border border-gray-200 px-2 mx-1.5 rounded-xl"}>
+                                                          {trigger}
+                                                      </Text>
                                                   )
                                               })
                                           }
@@ -117,22 +125,13 @@ export default function Index() {
 
               }
 
+              <Link href="/select-package" className={" absolute bottom-4 right-4 bg-white border border-muted border-dashed z-50 rounded-full p-4 shadow-2xl"}>
+                  <Text className={"text-black font-bold text-xl"}> + Create Alert</Text>
+              </Link>
+
+              <Listener />
+
           </SafeAreaView>
-
-          <Link href="/select-package" style={styles.floatingButton} className={"bg-white border border-muted border-dashed z-50 rounded-full p-4 shadow-2xl"}>
-              <Text className={"text-black font-bold text-xl"}> + Create Alert</Text>
-          </Link>
-
-          <Listener />
-
       </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-    floatingButton: {
-        position: "absolute",
-        right: 16,
-        bottom: 26,
-    }
-});

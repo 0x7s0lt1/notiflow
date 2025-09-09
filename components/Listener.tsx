@@ -1,8 +1,9 @@
-import {Alert, View, AppRegistry} from "react-native";
+import {Alert, AppRegistry} from "react-native";
 import RNAndroidNotificationListener, { RNAndroidNotificationListenerHeadlessJsName } from 'react-native-android-notification-listener';
 import {useEffect, useRef} from "react";
 import useAlertStorage from "@/hooks/use-alert-storage";
 import {Notifications} from "react-native-notifications";
+import {AlertStatus} from "@/types/AlertStatus";
 
 const Listener = () => {
 
@@ -13,6 +14,7 @@ const Listener = () => {
     }
 
     let statusChecked = useRef<boolean>(false);
+    let taskRegistered = useRef<boolean>(false);
     const { storage } = useAlertStorage();
 
     useEffect(() => {
@@ -63,11 +65,11 @@ const Listener = () => {
 
         if (notification) {
 
-            const appAlerts = storage.filter((alert) => alert.targetPackage.appName === notification.app);
+            const appAlerts = storage.filter((alert) => alert.targetPackage.appName === notification.app && alert.status === AlertStatus.ACTIVE);
 
             if(appAlerts.length > 0){
 
-                const notiFicationText = [
+                const notificationText = [
                     notification.title,
                     notification.titleBig,
                     notification.text,
@@ -80,7 +82,7 @@ const Listener = () => {
 
                 for(const alert of appAlerts){
 
-                    if( alert.triggers.some((trigger: string) => notiFicationText.includes(trigger)) ){
+                    if( alert.triggers.some((trigger: string) => notificationText.includes(trigger)) ){
                         try{
 
                             await fetch(alert.webhook_url,{
@@ -106,6 +108,16 @@ const Listener = () => {
 
     }
 
+    useEffect(() => {
+
+        if(!taskRegistered.current){
+            taskRegistered.current = true;
+            AppRegistry.registerHeadlessTask(RNAndroidNotificationListenerHeadlessJsName,	() => headlessNotificationListener)
+            console.log("Headless task registered")
+        }
+
+    },[]);
+
     /**
      * This should be required early in the sequence
      * to make sure the JS execution environment is setup before other
@@ -116,13 +128,14 @@ const Listener = () => {
      * PS: I'm using here the constant RNAndroidNotificationListenerHeadlessJsName to ensure
      *     that I register the headless with the right name
      */
-    if(!AppRegistry._headlessTasks?.[RNAndroidNotificationListenerHeadlessJsName]){
-        AppRegistry.registerHeadlessTask(RNAndroidNotificationListenerHeadlessJsName,	() => headlessNotificationListener)
-    }
+    // if(!AppRegistry._headlessTasks?.[RNAndroidNotificationListenerHeadlessJsName]){
+    //     AppRegistry.registerHeadlessTask(RNAndroidNotificationListenerHeadlessJsName,	() => headlessNotificationListener)
+    // }
+    // console.log(AppRegistry.getRegistry());
 
 
     return (
-        <View />
+        <></>
     )
 }
 

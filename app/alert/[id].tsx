@@ -12,7 +12,7 @@ import {
     Image,
     ToastAndroid,
     Alert,
-    TextInput
+    TextInput, KeyboardAvoidingView
 } from "react-native";
 import {AlertStatus} from "@/types/AlertStatus";
 
@@ -160,6 +160,10 @@ const AlertView = () => {
             })();
         }
 
+        return () => {
+            alertFetched.current = false;
+        }
+
     },[fetchStorage, id, storage]);
 
     return (
@@ -169,10 +173,13 @@ const AlertView = () => {
                     <View>
                         <ActivityIndicator size="large" />
                     </View> :
-                    <View className="flex flex-col items-center justify-start w-full h-full p-4">
-                        <Image width={100} height={100} source={{uri: `data:image/png;base64,${alert.targetPackage.icon}`}} className="w-24 h-24" />
-                        <Text className="text-2xl font-bold">{alert.targetPackage.appName}</Text>
-                        <Text>{alert.targetPackage.packageName}</Text>
+                    <KeyboardAvoidingView className="flex flex-col items-center justify-start w-full h-full p-4">
+
+                        <View className="flex flex-col items-center justify-center w-full gap-2">
+                            <Image width={100} height={100} source={{uri: `data:image/png;base64,${alert.targetPackage.icon}`}} className="w-24 h-24" />
+                            <Text className="text-2xl font-bold">{alert.targetPackage.appName}</Text>
+                            <Text>{alert.targetPackage.packageName}</Text>
+                        </View>
 
                         <View className={"w-full my-4 p-4 flex flex-col gap-2 border border-gray-200 rounded-2xl"}>
                             <View className="my-4">
@@ -183,6 +190,7 @@ const AlertView = () => {
                                     value={triggerString}
                                     onChangeText={handleTriggerChange}
                                     keyboardType="default"
+                                    placeholderTextColor={"gray"}
                                     autoCapitalize="none"
                                 />
                                 <Text className="text-sm text-gray-500">Place triggers separated by commas</Text>
@@ -197,6 +205,7 @@ const AlertView = () => {
                                     inputMode={"url"}
                                     dataDetectorTypes={"link"}
                                     keyboardType="default"
+                                    placeholderTextColor={"gray"}
                                     autoCapitalize="none"
                                 />
                                 <Text className="text-sm text-gray-500">Paste your webhook URL here</Text>
@@ -211,6 +220,7 @@ const AlertView = () => {
                                     multiline
                                     numberOfLines={5}
                                     keyboardType="default"
+                                    placeholderTextColor={"gray"}
                                     autoCapitalize="none"
                                 />
                                 <Text className="text-sm text-gray-500">Paste your webhook payload here</Text>
@@ -232,7 +242,7 @@ const AlertView = () => {
                                 <Text>Delete</Text>
                             </TouchableOpacity>
                         </View>
-                    </View>
+                    </KeyboardAvoidingView>
                 }
 
 
