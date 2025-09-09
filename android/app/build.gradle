@@ -90,7 +90,8 @@ android {
     namespace 'com.anonymous.NotiFlow'
     defaultConfig {
         applicationId 'com.anonymous.NotiFlow'
-        minSdkVersion rootProject.ext.minSdkVersion
+//         minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion 24
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"

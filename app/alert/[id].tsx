@@ -77,6 +77,7 @@ const AlertView = () => {
                         onPress: async () => {
                             await removeAlert(alert.id)
                             ToastAndroid.show("Alert deleted successfully", ToastAndroid.LONG);
+                            router.replace("/");
                         }
                     }
                 ]
@@ -163,12 +164,12 @@ const AlertView = () => {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView className="flex-1 h-full w-full flex-row items-center justify-center p-4">
+            <SafeAreaView className="flex flex-col h-full w-full items-start justify-center p-4">
                 { alert === null ?
                     <View>
                         <ActivityIndicator size="large" />
                     </View> :
-                    <View className="flex flex-col items-center justify-center w-full h-full p-4">
+                    <View className="flex flex-col items-center justify-start w-full h-full p-4">
                         <Image width={100} height={100} source={{uri: `data:image/png;base64,${alert.targetPackage.icon}`}} className="w-24 h-24" />
                         <Text className="text-2xl font-bold">{alert.targetPackage.appName}</Text>
                         <Text>{alert.targetPackage.packageName}</Text>

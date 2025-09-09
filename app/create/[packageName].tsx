@@ -3,7 +3,7 @@ import {Link, useLocalSearchParams, useRouter} from "expo-router";
 import {useEffect, useRef, useState} from "react";
 import StorageItemType from "@/types/storage/StorageItemType";
 import useAlertStorage from "@/hooks/use-alert-storage";
-import {ActivityIndicator, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, Text, TextInput, ToastAndroid, TouchableOpacity, View} from "react-native";
 import AppDetail from "@/types/storage/AppDetailType";
 import RNInstalledApplication from 'react-native-installed-application';
 import {Image} from "expo-image";
@@ -41,13 +41,16 @@ const CreateAlert = () => {
         setOrderObject(text);
     };
 
+    const handleCancel = () => {
+        router.replace("/");
+    }
+
     const onSubmit = async () => {
 
         setLoading(true);
+        setError(null);
 
         try{
-            setError(null);
-
 
             if(!app){
                 setError("App not found");
@@ -121,7 +124,7 @@ const CreateAlert = () => {
                     <View className="flex flex-col items-center justify-center p-2 gap-4 w-full">
 
                         <View className="flex flex-col items-center justify-center w-full gap-2">
-                            <Image width={64} height={64} source={{ uri: `data:image/png;base64,${app?.icon}` }}  />
+                            <Image width={100} height={100} source={{ uri: `data:image/png;base64,${app?.icon}` }}  />
                             <View className="flex flex-col items-center justify-center">
                                 <Text className="text-2xl font-bold">{app?.appName}</Text>
                                 <Text>{app?.packageName}</Text>
@@ -175,12 +178,12 @@ const CreateAlert = () => {
                         </View>
 
                         <View className="flex flex-col items-center justify-center w-full gap-2">
-                            <TouchableOpacity style={styles.saveButton} onPress={onSubmit} className="items-center justify-center button w-full p-4 flex flex-col rounded-2xl">
-                                <Text className="text-white text-lg font-bold">Save</Text>
+                            <TouchableOpacity  onPress={onSubmit} className="flex flex-row items-center justify-center p-2 bg-blue-200 rounded-xl w-full border border-gray-500">
+                                <Text>Save</Text>
                             </TouchableOpacity>
-                            <Link style={styles.cancelButton} href="/" className="w-full p-4 flex flex-row rounded-2xl">
-                                <TouchableOpacity onPress={onSubmit} className="items-center justify-center button w-full flex flex-col">
-                                    <Text className="text-white text-lg font-bold">Cancel</Text>
+                            <Link  href="/" className="w-full flex flex-row rounded-2xl">
+                                <TouchableOpacity onPress={handleCancel} className="flex flex-row items-center justify-center p-2 bg-red-200 rounded-xl w-full border border-gray-500">
+                                    <Text>Cancel</Text>
                                 </TouchableOpacity>
                             </Link>
                         </View>
@@ -193,13 +196,5 @@ const CreateAlert = () => {
     )
 }
 
-const styles = StyleSheet.create({
-    saveButton: {
-        backgroundColor: "rgba(37,99,235,0.44)",
-    },
-    cancelButton: {
-        backgroundColor: "rgba(239,68,68,0.66)",
-    }
-})
 
 export default CreateAlert;
