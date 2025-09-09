@@ -1,12 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {StorageKey} from "@/types/storage/StorageKey";
-import InitialStorage from "@/types/storage/InitialStorage";
 import {useState} from "react";
 import StorageItemType from "@/types/storage/StorageItemType";
+import {AlertStatus} from "@/types/AlertStatus";
 
 const useAlertStorage = () => {
 
-    const [storage, setStorage] = useState<StorageItemType[]>(InitialStorage);
+    const [storage, setStorage] = useState<StorageItemType[]>([]);
 
     const fetchStorage = async () => {
         const aStore = await AsyncStorage.getItem(StorageKey.ALERT_STORAGE);
@@ -21,11 +21,16 @@ const useAlertStorage = () => {
 
     const updateStorage = async (data: StorageItemType[]) => {
         await AsyncStorage.setItem(StorageKey.ALERT_STORAGE, JSON.stringify(data));
-        setStorage(data);
+        setStorage(
+            JSON.parse( await AsyncStorage.getItem(StorageKey.ALERT_STORAGE) ?? "[]")
+        );
     }
 
     const addAlert = async (alert: StorageItemType) => {
-        const newStorage = [...storage, alert];
+        const newStorage = [
+            ...JSON.parse( await AsyncStorage.getItem(StorageKey.ALERT_STORAGE) ?? "[]"),
+            alert
+        ];
         await updateStorage(newStorage);
     }
 
@@ -39,7 +44,17 @@ const useAlertStorage = () => {
         setStorage([]);
     }
 
-    return {storage, fetchStorage, updateStorage, addAlert, removeAlert, clearStorage};
+    const setStatus = async (id: string, status: AlertStatus) => {
+        const newStorage = storage.map((a) => a.id === id ? {...a, status} : a);
+        await updateStorage(newStorage);
+    }
+
+    const replaceAlert = async (id: string, alert: StorageItemType) => {
+        const newStorage = storage.map((a) => a.id === id ? alert : a);
+        await updateStorage(newStorage);
+    }
+
+    return {storage, setStatus, fetchStorage, updateStorage, addAlert, removeAlert, clearStorage, replaceAlert};
 
 }
 
