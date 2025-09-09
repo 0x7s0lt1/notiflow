@@ -1,6 +1,6 @@
 import {Alert, AppRegistry} from "react-native";
 import RNAndroidNotificationListener, { RNAndroidNotificationListenerHeadlessJsName } from 'react-native-android-notification-listener';
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import useAlertStorage from "@/hooks/use-alert-storage";
 import {Notifications} from "react-native-notifications";
 import {AlertStatus} from "@/types/AlertStatus";
@@ -9,13 +9,17 @@ const Listener = () => {
 
     enum PermissionStatus {
         AUTHORIZED = "authorized",
+        GRANTED = "granted",
         DENIED = "denied",
         UNKNOWN = "unknown"
     }
 
+    const { storage } = useAlertStorage();
+
     let statusChecked = useRef<boolean>(false);
     let taskRegistered = useRef<boolean>(false);
-    const { storage } = useAlertStorage();
+
+    const [permissionStatus, setPermissionStatus] = useState<PermissionStatus|unknown>(PermissionStatus.UNKNOWN);
 
     useEffect(() => {
 
@@ -23,18 +27,36 @@ const Listener = () => {
             statusChecked.current = true;
 
             (async ()=>{
-
-                const status = await RNAndroidNotificationListener.getPermissionStatus()
-
-                if(status !== PermissionStatus.AUTHORIZED){
-                    Alert.alert("Notification permission is required to use this app");
-                    RNAndroidNotificationListener.requestPermission();
+                if(permissionStatus !== PermissionStatus.AUTHORIZED){
+                    await requestPermission();
                 }
-
             })();
         }
 
+        return () => {
+            statusChecked.current = false;
+        }
+
     });
+
+    const requestPermission = async () => {
+
+        setPermissionStatus(
+            await RNAndroidNotificationListener.getPermissionStatus()
+        );
+
+        if(![PermissionStatus.AUTHORIZED, PermissionStatus.GRANTED].includes(permissionStatus as any)){
+            Alert.alert("Notification permission is required", `Please grant notification permission to use this app`,[
+                {
+                    text: "Go to Settings",
+                    onPress: () => {
+                        RNAndroidNotificationListener.requestPermission();
+                    }
+                }
+            ]);
+        }
+
+    }
 
     const headlessNotificationListener = async ({ notification }) => {/**
      * This notification is a JSON string in the follow format:
@@ -90,10 +112,10 @@ const Listener = () => {
                                 body: alert.payload
                             });
 
-                            let localNotification = Notifications.postLocalNotification({
-                                title: `Alert sent!`,
-                                body: `A notification from ${alert.targetPackage.appName} triggered an alert.`
-                            });
+                            // let localNotification = Notifications.postLocalNotification({
+                            //     title: `Alert sent!`,
+                            //     body: `A notification from ${alert.targetPackage.appName} triggered an alert.`
+                            // });
 
                         }catch (error){
                             console.log(error);
@@ -110,13 +132,13 @@ const Listener = () => {
 
     useEffect(() => {
 
-        if(!taskRegistered.current){
+        if([PermissionStatus.AUTHORIZED, PermissionStatus.GRANTED].includes(permissionStatus as any) && !taskRegistered.current){
             taskRegistered.current = true;
             AppRegistry.registerHeadlessTask(RNAndroidNotificationListenerHeadlessJsName,	() => headlessNotificationListener)
             console.log("Headless task registered")
         }
 
-    },[]);
+    },[PermissionStatus.AUTHORIZED, PermissionStatus.GRANTED, headlessNotificationListener, permissionStatus]);
 
     /**
      * This should be required early in the sequence
@@ -128,11 +150,6 @@ const Listener = () => {
      * PS: I'm using here the constant RNAndroidNotificationListenerHeadlessJsName to ensure
      *     that I register the headless with the right name
      */
-    // if(!AppRegistry._headlessTasks?.[RNAndroidNotificationListenerHeadlessJsName]){
-    //     AppRegistry.registerHeadlessTask(RNAndroidNotificationListenerHeadlessJsName,	() => headlessNotificationListener)
-    // }
-    // console.log(AppRegistry.getRegistry());
-
 
     return (
         <></>
