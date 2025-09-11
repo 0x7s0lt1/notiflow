@@ -1,29 +1,30 @@
-import {ActivityIndicator, FlatList, Platform, Pressable, Switch, Text, TextInput, View} from "react-native";
+import {ActivityIndicator, FlatList, Pressable, Switch, Text, TextInput, View} from "react-native";
 import {useEffect, useRef, useState} from "react";
-import RNInstalledApplication from 'react-native-installed-application';
 import AppDetail from "@/types/storage/AppDetailType";
 import {Image} from "expo-image";
 import {Link} from "expo-router";
+import useAppList from "@/hooks/use-app-list";
+import {SafeAreaView} from "react-native-safe-area-context";
 
 const SelectPackage = () => {
 
+
+    const {appList, fetchAppList, includeSystemApps, setIncludeSystemApps} = useAppList();
+
     let appsFetched = useRef<boolean>(false);
 
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [search, setSearch] = useState<string>("");
-    const [includeSystemApps, setIncludeSystemApps] = useState<boolean>(false);
 
-    const [apps, setApps] = useState<AppDetail[]>([]);
     const [filteredApps, setFilteredApps] = useState<AppDetail[]>([]);
 
     const handleSearchChange = (text: string) => {
         setSearch(text);
     }
 
+
     const handleIncludeSystemAppsChange = async (value: boolean) => {
         setIncludeSystemApps(value);
-        await fetchApps(value);
-
     }
 
     const toggleIncludeSystemApps = () => {
@@ -35,45 +36,41 @@ const SelectPackage = () => {
         if (!appsFetched.current) {
             appsFetched.current = true;
             (async () => {
-                await fetchApps(includeSystemApps);
+                await fetchAppList();
+                setLoading(false);
             })();
         }
 
     }, []);
-
-    const fetchApps = async (_includeSystemApps: boolean) => {
-        if(Platform.OS !== "web"){
-            setLoading(true);
-
-            const Apps = _includeSystemApps ?
-                await RNInstalledApplication.getApps() :
-                await RNInstalledApplication.getNonSystemApps();
-            setApps(Apps);
-
+    
+    useEffect(() => {
+        setLoading(true);
+        (async () => {
+            await fetchAppList(includeSystemApps);
             setLoading(false);
-        }
-    }
+        })();
+        
+    }, [includeSystemApps]);
 
     useEffect(() => {
 
         if(search.trim().length > 0){
-            const filtered = apps.filter((app) => app.appName.toLowerCase().includes(search.toLowerCase()));
+            const filtered = appList.filter((app) => app.appName.toLowerCase().includes(search.toLowerCase()));
             setFilteredApps(filtered);
         }else{
-            setFilteredApps(apps);
+            setFilteredApps(appList);
         }
 
-    }, [apps, search]);
+    }, [appList, search]);
 
     return (
-        <View className={"flex flex-col items-center justify-center w-full h-full p-4"}>
-
-            <View className={"w-full my-4 p-2"}>
+        <SafeAreaView className={"flex flex-col items-center justify-center w-full h-full p-4"}>
+            <View className={"w-full mb-4 p-2"}>
                 <View className={"flex flex-row items-center justify-between w-full my-2"}>
                     <Text>
                         Search
                     </Text>
-                    <View className={"flex flex-row items-center justify-end mt-2"}>
+                    <View className={"flex flex-row items-center justify-end mt-2 border border-gray-200 p-2 rounded-xl"}>
                         <Switch
                             value={includeSystemApps}
                             onValueChange={handleIncludeSystemAppsChange}
@@ -103,7 +100,17 @@ const SelectPackage = () => {
                     data={filteredApps}
                     renderItem={ (i: any) =>  {
                         return (
-                            <Link href={`/create/${i.item.packageName}`} className={"flex my-2 border border-gray-200 items-center shadow rounded-2xl p-4"}>
+                            <Link
+                                href={{
+                                    pathname: `/create/[packageName]`,
+                                    params: {
+                                        packageName: i.item.packageName,
+                                        appName: i.item.appName,
+                                        versionNAme: i.item.versionName,
+                                        icon: i.item.icon,
+                                    }
+                                }}
+                                className={"flex my-2 border border-gray-200 items-center rounded-2xl p-4"}>
                                 <View className={"flex flex-row items-center justify-start"}>
                                     <Image width={54} height={54} source={{uri: `data:image/png;base64,${i.item.icon}`}} />
                                     <View className={"flex flex-col items-center justify-start w-full"}>
@@ -118,9 +125,7 @@ const SelectPackage = () => {
                 />
 
             }
-
-
-        </View>
+        </SafeAreaView>
     )
 }
 

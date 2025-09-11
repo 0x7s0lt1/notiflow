@@ -13,8 +13,13 @@ const useAlertStorage = () => {
 
         if(!aStore){
             await AsyncStorage.setItem(StorageKey.ALERT_STORAGE, JSON.stringify(storage));
+
+            return [];
         }else{
-            setStorage(JSON.parse(aStore) as StorageItemType[]);
+            const parsedStorage = JSON.parse(aStore) as StorageItemType[];
+            setStorage(parsedStorage);
+
+            return parsedStorage;
         }
 
     }

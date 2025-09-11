@@ -4,22 +4,25 @@ const useNotification = () => {
 
     Notifications.setNotificationHandler({
         handleNotification: async (): Promise<Notifications.NotificationBehavior> => ({
-            shouldShowAlert: true,
             shouldShowList: false,
-            shouldPlaySound: true,
-            shouldShowBanner: false,
+            shouldPlaySound: false,
+            shouldShowBanner: true,
             shouldSetBadge: false,
         }),
     });
 
     const showLocalNotification = async (title: string, body: string) => {
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title,
-                body,
-            },
-            trigger: null
-        });
+        try{
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title,
+                    body,
+                },
+                trigger: null
+            });
+        }catch (e){
+            console.log(e);
+        }
     }
 
     return { showLocalNotification }
