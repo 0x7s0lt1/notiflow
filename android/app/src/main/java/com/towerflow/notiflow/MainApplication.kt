@@ -1,4 +1,4 @@
-package com.anonymous.NotiFlow
+package com.towerflow.notiflow
 
 import android.app.Application
 import android.content.res.Configuration

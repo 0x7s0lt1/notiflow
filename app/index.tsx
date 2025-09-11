@@ -5,8 +5,8 @@ import useAlertStorage from "@/hooks/use-alert-storage";
 import {Play, Pause} from "lucide-react-native";
 import {Image} from "expo-image";
 import {AlertStatus} from "@/types/AlertStatus";
-import Listener from "@/components/Listener";
 import {useIsFocused} from "@react-navigation/native";
+import useNotification from "@/hooks/use-notification";
 
 export default function Index() {
 
@@ -14,6 +14,7 @@ export default function Index() {
 
     const isFocused = useIsFocused();
     const { storage, fetchStorage, setStatus } = useAlertStorage();
+    const { showLocalNotification } = useNotification();
 
 
     const handleStatusPress = async (id: string, status: AlertStatus) => {
@@ -40,6 +41,10 @@ export default function Index() {
 
             (async ()=>{
                 try{
+
+
+                   await showLocalNotification("Test", "This is a test notification");
+
                    await fetchStorage();
                 }catch (e){
                     console.log(e);
@@ -52,10 +57,12 @@ export default function Index() {
             storageFetched.current = false;
         }
 
-    },[fetchStorage, isFocused])
+    },[fetchStorage, isFocused, showLocalNotification])
 
   return (
       <View className={"flex flex-col items-center justify-center p-4 gap-2 min-h-[80vh]"}>
+
+          {/*<Listener />*/}
 
           <Text className={"my-2"}>
               Webhook calls by listening to apps notifications
@@ -126,8 +133,6 @@ export default function Index() {
           <Link href="/select-package" className={" absolute bottom-4 right-4 bg-white border border-muted border-dashed z-50 rounded-full p-4 shadow-2xl"}>
               <Text className={"text-black font-bold text-xl"}> + Create Alert</Text>
           </Link>
-
-          <Listener />
 
       </View>
   );
