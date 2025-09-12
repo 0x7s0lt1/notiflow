@@ -2,20 +2,26 @@ import {useLocalSearchParams, useRouter} from "expo-router";
 import {useState} from "react";
 import StorageItemType from "@/types/storage/StorageItemType";
 import useAlertStorage from "@/hooks/use-alert-storage";
-import {KeyboardAvoidingView, ScrollView, Text, TextInput, ToastAndroid, TouchableOpacity, View} from "react-native";
-import {Image} from "expo-image";
+import {
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    TextInput as RNTextInput,
+    ToastAndroid,
+    StyleSheet,
+    View
+} from "react-native";
 import {AlertStatus} from "@/types/AlertStatus";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {HttpMethod} from "@/types/HttpMethod";
 import {Picker} from "@react-native-picker/picker";
+import {Surface, Avatar, Button, TextInput} from 'react-native-paper';
 
 const CreateAlert = () => {
 
     const router = useRouter();
     const { packageName, appName, versionName, icon } = useLocalSearchParams();
     const { addAlert } = useAlertStorage();
-
-    const [loading, setLoading] = useState<boolean>(false);
 
     const [triggerString, setTriggerString] = useState<string>("");
     const [triggerArray, setTriggerArray] = useState<string[]>([]);
@@ -108,8 +114,6 @@ const CreateAlert = () => {
         }catch (e) {
             console.log(e);
             setError("Something went wrong");
-        }finally {
-            setLoading(false);
         }
 
     };
@@ -121,18 +125,17 @@ const CreateAlert = () => {
                 <KeyboardAvoidingView className="flex flex-col items-center justify-center p-2 gap-4 w-full">
 
                     <View className="flex flex-col items-center justify-center w-full gap-2">
-                        <Image width={100} height={100} source={{ uri: `data:image/png;base64,${icon}` }}  />
+                        <Avatar.Image size={100} source={{ uri: `data:image/png;base64,${icon}` }}  />
                         <View className="flex flex-col items-center justify-center">
                             <Text className="text-2xl font-bold">{appName}</Text>
                             <Text>{packageName}</Text>
                         </View>
                     </View>
 
-                    <View className={"w-full my-4 p-4 flex flex-col gap-2 border border-gray-200 rounded-2xl"}>
+                    <Surface style={{padding: 12, borderRadius: 12}} className={"w-full my-4 p-4 flex flex-col gap-2 border border-gray-200 rounded-2xl"}>
                         <View className="my-4">
                             <Text className="text-lg font-bold">Triggers</Text>
                             <TextInput
-                                className="w-full border border-gray-200 text-black rounded-md p-2"
                                 placeholder="example,triggers,here..."
                                 value={triggerString}
                                 onChangeText={handleTriggerChange}
@@ -145,14 +148,15 @@ const CreateAlert = () => {
                         <View>
                             <Text className="text-lg font-bold">HTTP Method</Text>
                             <Picker
-                                className="w-full border border-gray-200 rounded-md p-2 text-black"
+                                style={styles.textBlack}
+                                className="w-full border border-gray-200 rounded-md p-2"
                                 selectedValue={httpMethod}
                                 onValueChange={handleHttpMethodChange}
                             >
                                 {
                                     Object.keys(HttpMethod).map((method: string) => {
                                         return (
-                                            <Picker.Item className="text-black"  key={method} label={method} value={method} />
+                                            <Picker.Item style={styles.textBlack} key={method} label={method} value={method} />
                                         )
                                     })
                                 }
@@ -162,7 +166,6 @@ const CreateAlert = () => {
                         <View>
                             <Text className="text-lg font-bold">Webhook URL</Text>
                             <TextInput
-                                className="w-full border border-gray-200 text-black rounded-md p-2"
                                 placeholder="https://example.com/webhook"
                                 value={webhookURL}
                                 onChangeText={handleWebhookURLChange}
@@ -177,15 +180,15 @@ const CreateAlert = () => {
                         <View>
                             <View className="flex flex-row items-center justify-between">
                                 <Text className="text-lg font-bold">Payload Fields</Text>
-                                <TouchableOpacity className="p-2 border border-gray-200 rounded-md" onPress={addPayloadField}>
-                                    <Text>+ Add Field</Text>
-                                </TouchableOpacity>
+                                <Button mode="contained-tonal" className="p-2 border border-gray-200 rounded-md" onPress={addPayloadField}>
+                                    + Add Field
+                                </Button>
                             </View>
                             {
                                 payloadFields.map((field, index) => {
                                     return (
                                         <View key={index} className="flex flex-col gap-2 items-center justify-between border border-gray-200 rounded-md p-2 my-2">
-                                            <TextInput
+                                            <RNTextInput
                                                 className="w-full border border-gray-200 text-black rounded-md p-2"
                                                 placeholder="Key"
                                                 value={field.key}
@@ -194,7 +197,7 @@ const CreateAlert = () => {
                                                 autoCapitalize="none"
                                                 keyboardType="default"
                                             />
-                                            <TextInput
+                                            <RNTextInput
                                                 className="w-full border border-gray-200 text-black rounded-md p-2"
                                                 placeholder="Value"
                                                 value={field.value}
@@ -203,9 +206,9 @@ const CreateAlert = () => {
                                                 autoCapitalize="none"
                                                 keyboardType="default"
                                             />
-                                            <TouchableOpacity onPress={() => removePayloadField(index)} className="p-2 w-full flex items-center justify-center border bg-red-200 border-gray-200 rounded-md">
-                                                <Text>Remove</Text>
-                                            </TouchableOpacity>
+                                            <Button mode="contained-tonal" onPress={() => removePayloadField(index)} className="p-2 w-full flex items-center justify-center bg-red-500 rounded-md">
+                                               - Remove field
+                                            </Button>
                                         </View>
                                     )})
                             }
@@ -216,15 +219,15 @@ const CreateAlert = () => {
                             <Text className="text-red-500 my-2">Error: {error}</Text>
                         }
 
-                    </View>
+                    </Surface>
 
                     <View className="flex flex-col items-center justify-center w-full gap-2 mb-[20vw]">
-                        <TouchableOpacity  onPress={onSubmit} className="flex flex-row items-center justify-center p-2 bg-blue-200 rounded-xl w-full border border-gray-500">
-                            <Text>Save</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={handleCancel} className="flex flex-row items-center justify-center p-2 bg-red-200 rounded-xl w-full border border-gray-500">
-                            <Text>Cancel</Text>
-                        </TouchableOpacity>
+                        <Button mode="contained"  onPress={onSubmit} className="flex flex-row items-center justify-center p-2 rounded-xl w-full">
+                            Save
+                        </Button>
+                        <Button mode="contained-tonal" style={styles.redButton} onPress={handleCancel} className="flex flex-row items-center justify-center p-2 rounded-xl w-full">
+                            Cancel
+                        </Button>
                     </View>
 
                 </KeyboardAvoidingView>
@@ -232,6 +235,16 @@ const CreateAlert = () => {
         </SafeAreaView>
     )
 }
+
+const styles = StyleSheet.create({
+    redButton:{
+        backgroundColor: "rgba(255,0,0,0.51)",
+        color: "white",
+    },
+    textBlack:{
+        color: "black",
+    }
+});
 
 
 export default CreateAlert;

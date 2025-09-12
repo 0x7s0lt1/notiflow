@@ -5,25 +5,24 @@ import useAlertStorage from "@/hooks/use-alert-storage";
 import {useRouter} from "expo-router";
 import {
     ActivityIndicator,
-    Text,
-    TouchableOpacity,
+    TextInput as RNTextInput,
     View,
-    Image,
+    Text,
     ToastAndroid,
     Alert,
-    TextInput, KeyboardAvoidingView, ScrollView
+    KeyboardAvoidingView, ScrollView, StyleSheet
 } from "react-native";
-import {AlertStatus} from "@/types/AlertStatus";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {HttpMethod} from "@/types/HttpMethod";
 import {Picker} from "@react-native-picker/picker";
+import {Surface, Avatar, Button, TextInput} from 'react-native-paper';
 
 const AlertView = () => {
 
     const router = useRouter();
 
     const { id } = useLocalSearchParams();
-    const { storage, fetchStorage, replaceAlert, setStatus, removeAlert } = useAlertStorage();
+    const { storage, fetchStorage, replaceAlert, removeAlert } = useAlertStorage();
 
     let alertFetched = useRef<boolean>(false);
     const [alert, setAlert] = useState<StorageItemType | null>(null);
@@ -67,25 +66,6 @@ const AlertView = () => {
         }
         setPayloadFields(newPayloadFields);
     };
-
-    const handleStatusPress = async () => {
-        if(alert){
-            Alert.alert("Set Status", `Are you sure you want to ${alert.status === AlertStatus.ACTIVE ? "resume" : "pause"} this alert?`,
-                [
-                    {
-                        text: "Cancel"
-                    },
-                    {
-                        text: "Set",
-                        onPress: async () => {
-                            await setStatus(alert.id, alert.status === AlertStatus.ACTIVE ? AlertStatus.INACTIVE : AlertStatus.ACTIVE)
-                            ToastAndroid.show("Status updated successfully", ToastAndroid.LONG);
-                        }
-                    }
-                ]
-            )
-        }
-    }
 
     const handleDeletePress = async () => {
         if(alert){
@@ -210,12 +190,12 @@ const AlertView = () => {
                     <KeyboardAvoidingView className="flex flex-col items-center justify-start w-full h-full p-4">
 
                         <View className="flex flex-col items-center justify-center w-full gap-2">
-                            <Image width={100} height={100} source={{uri: `data:image/png;base64,${alert.targetPackage.icon}`}} className="w-24 h-24" />
+                            <Avatar.Image size={100} source={{uri: `data:image/png;base64,${alert.targetPackage.icon}`}}  />
                             <Text className="text-2xl font-bold">{alert.targetPackage.appName}</Text>
                             <Text>{alert.targetPackage.packageName}</Text>
                         </View>
 
-                        <View className={"w-full my-4 p-4 flex flex-col gap-2 border border-gray-200 rounded-2xl"}>
+                        <Surface style={{padding: 12, borderRadius: 12}} className={"w-full my-4 p-4 flex flex-col gap-2 border border-gray-200 rounded-2xl"}>
                             <View className="my-4">
                                 <Text className="text-lg font-bold">Triggers</Text>
                                 <TextInput
@@ -232,14 +212,15 @@ const AlertView = () => {
                             <View>
                                 <Text className="text-lg font-bold">HTTP Method</Text>
                                 <Picker
-                                    className="w-full border border-gray-200 text-black rounded-md p-2"
+                                    style={styles.textBlack}
+                                    className="w-full border border-gray-200 rounded-md p-2"
                                     selectedValue={httpMethod}
                                     onValueChange={handleHttpMethodChange}
                                 >
                                     {
                                         Object.keys(HttpMethod).map((method: string) => {
                                             return (
-                                                <Picker.Item className="text-black"  key={method} label={method} value={method} />
+                                                <Picker.Item style={styles.textBlack}  key={method} label={method} value={method} />
                                             )
                                         })
                                     }
@@ -264,15 +245,15 @@ const AlertView = () => {
                             <View>
                                 <View className="flex flex-row items-center justify-between">
                                     <Text className="text-lg font-bold">Payload Fields</Text>
-                                    <TouchableOpacity className="p-2 border border-gray-200 rounded-md" onPress={addPayloadField}>
-                                        <Text>+ Add Field</Text>
-                                    </TouchableOpacity>
+                                    <Button mode="contained-tonal" className="p-2" onPress={addPayloadField}>
+                                        + Add Field
+                                    </Button>
                                 </View>
                                 {
                                     payloadFields.map((field, index) => {
                                         return (
                                             <View key={index} className="flex flex-col gap-2 items-center justify-between border border-gray-200 rounded-md p-2 my-2">
-                                                <TextInput
+                                                <RNTextInput
                                                     className="w-full border border-gray-200 text-black rounded-md p-2"
                                                     placeholder="Key"
                                                     value={field.key}
@@ -281,7 +262,7 @@ const AlertView = () => {
                                                     autoCapitalize="none"
                                                     keyboardType="default"
                                                 />
-                                                <TextInput
+                                                <RNTextInput
                                                     className="w-full border border-gray-200 text-black rounded-md p-2"
                                                     placeholder="Value"
                                                     value={field.value}
@@ -290,9 +271,9 @@ const AlertView = () => {
                                                     autoCapitalize="none"
                                                     keyboardType="default"
                                                 />
-                                                <TouchableOpacity onPress={() => removePayloadField(index)} className="p-2 w-full flex items-center justify-center border bg-red-200 border-gray-200 rounded-md">
-                                                    <Text>Remove</Text>
-                                                </TouchableOpacity>
+                                                <Button mode="contained-tonal" onPress={() => removePayloadField(index)} className="w-full flex items-center justify-center">
+                                                    - Remove field
+                                                </Button>
                                             </View>
                                         )})
                                 }
@@ -301,19 +282,16 @@ const AlertView = () => {
                             { error &&
                                 <Text className="text-red-500 my-2">Error: {error}</Text>
                             }
-                        </View>
+                        </Surface>
 
 
                         <View className="flex flex-col items-center justify-center w-full mt-4 gap-2">
-                            <TouchableOpacity onPress={onSubmit} className="flex flex-row items-center justify-center p-2 bg-green-200 rounded-xl w-full border border-gray-500">
-                                <Text>Save</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={handleStatusPress} className="flex flex-row items-center justify-center p-2 bg-blue-200 rounded-xl w-full border border-gray-500">
-                                <Text>{alert.status === AlertStatus.ACTIVE ? "Pause" : "Start"}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={handleDeletePress} className="flex flex-row items-center justify-center p-2 bg-red-200 rounded-xl w-full border border-gray-500">
-                                <Text>Delete</Text>
-                            </TouchableOpacity>
+                            <Button mode="contained" onPress={onSubmit} className="flex flex-row items-center justify-center w-full ">
+                                Save
+                            </Button>
+                            <Button mode="outlined" style={styles.redButton} onPress={handleDeletePress} className="flex flex-row items-center justify-center w-full ">
+                                Delete
+                            </Button>
                         </View>
                     </KeyboardAvoidingView>
                 }
@@ -321,5 +299,15 @@ const AlertView = () => {
         </SafeAreaView>
     )
 }
+
+const styles = StyleSheet.create({
+    redButton:{
+        backgroundColor: "rgba(255,0,0,0.51)",
+        color: "white",
+    },
+    textBlack:{
+        color: "black",
+    }
+});
 
 export default AlertView;

@@ -1,4 +1,4 @@
-# NotiFlow
+# Notiflow
 
 Notiflow is a React Native app that listens to notifications from other apps and, if they match specific triggers, sends data to a defined webhook URL.
 

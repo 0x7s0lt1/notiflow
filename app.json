@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "NotiFlow",
-    "slug": "NotiFlow",
+    "name": "Notiflow",
+    "slug": "Notiflow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon/android/play_store_512.png",
