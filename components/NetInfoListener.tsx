@@ -13,7 +13,7 @@ const NetInfoListener = () =>{
     const headlessNetInfoListener = async () => {
 
         addEventListener(async (state: any) => {
-            if(!state.isConnected || !state.isInternetReachable){
+            if(!state.isConnected && !state.isInternetReachable){
                 console.log("No internet connection!");
                 await showLocalNotification(
                     "No Internet Connection",
@@ -27,11 +27,9 @@ const NetInfoListener = () =>{
     useEffect(() => {
 
         if(!isRegistered.current){
+            isRegistered.current = true;
             (async ()=>{
-
-                isRegistered.current = true;
                 await headlessNetInfoListener();
-
             })();
         }
         
