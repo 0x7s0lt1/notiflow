@@ -18,3 +18,6 @@ git clone https://github.com/0x7s0lt1/notiflow.git
 cd notiflow
 yarn install
 npx expo run:android
+```
+
+Download: [notiflow.apk](https://github.com/0x7s0lt1/notiflow/blob/main/build/notiflow-v1.0.0.apk)
