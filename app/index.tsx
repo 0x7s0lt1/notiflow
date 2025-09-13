@@ -7,6 +7,7 @@ import {useIsFocused} from "@react-navigation/native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import Listener from "@/components/Listener";
 import { Surface, Chip, Avatar, IconButton, ActivityIndicator  } from 'react-native-paper';
+import NetInfoListener from "@/components/NetInfoListener";
 
 export default function Index() {
 
@@ -61,6 +62,8 @@ export default function Index() {
       <SafeAreaView>
 
           <Listener />
+          <NetInfoListener />
+
             <View className={"p-2 gap-2 min-h-[80vh]"}>
 
                 {loading ?
