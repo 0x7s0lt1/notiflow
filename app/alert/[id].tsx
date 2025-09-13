@@ -4,7 +4,6 @@ import StorageItemType from "@/types/storage/StorageItemType";
 import useAlertStorage from "@/hooks/use-alert-storage";
 import {useRouter} from "expo-router";
 import {
-    ActivityIndicator,
     TextInput as RNTextInput,
     View,
     Text,
@@ -15,7 +14,7 @@ import {
 import {SafeAreaView} from "react-native-safe-area-context";
 import {HttpMethod} from "@/types/HttpMethod";
 import {Picker} from "@react-native-picker/picker";
-import {Surface, Avatar, Button, TextInput} from 'react-native-paper';
+import {ActivityIndicator, Surface, Avatar, Button, TextInput} from 'react-native-paper';
 
 const AlertView = () => {
 
@@ -212,15 +211,15 @@ const AlertView = () => {
                             <View>
                                 <Text className="text-lg font-bold">HTTP Method</Text>
                                 <Picker
-                                    style={styles.textBlack}
-                                    className="w-full border border-gray-200 rounded-md p-2"
+                                    prompt={"Select HTTP method"}
                                     selectedValue={httpMethod}
+                                    dropdownIconColor="black"
                                     onValueChange={handleHttpMethodChange}
                                 >
                                     {
                                         Object.keys(HttpMethod).map((method: string) => {
                                             return (
-                                                <Picker.Item style={styles.textBlack}  key={method} label={method} value={method} />
+                                                <Picker.Item color={"black"} key={method} label={method} value={method} />
                                             )
                                         })
                                     }
@@ -271,7 +270,7 @@ const AlertView = () => {
                                                     autoCapitalize="none"
                                                     keyboardType="default"
                                                 />
-                                                <Button mode="contained-tonal" onPress={() => removePayloadField(index)} className="w-full flex items-center justify-center">
+                                                <Button mode="contained-tonal" onPress={() => removePayloadField(index)} style={styles.widthFull}>
                                                     - Remove field
                                                 </Button>
                                             </View>
@@ -286,10 +285,10 @@ const AlertView = () => {
 
 
                         <View className="flex flex-col items-center justify-center w-full mt-4 gap-2">
-                            <Button mode="contained" onPress={onSubmit} className="flex flex-row items-center justify-center w-full ">
+                            <Button mode="contained" onPress={onSubmit} style={styles.widthFull} >
                                 Save
                             </Button>
-                            <Button mode="outlined" style={styles.redButton} onPress={handleDeletePress} className="flex flex-row items-center justify-center w-full ">
+                            <Button mode="contained-tonal" style={styles.redButton} onPress={handleDeletePress}>
                                 Delete
                             </Button>
                         </View>
@@ -304,9 +303,10 @@ const styles = StyleSheet.create({
     redButton:{
         backgroundColor: "rgba(255,0,0,0.51)",
         color: "white",
+        width: "100%"
     },
-    textBlack:{
-        color: "black",
+    widthFull:{
+        width: "100%"
     }
 });
 

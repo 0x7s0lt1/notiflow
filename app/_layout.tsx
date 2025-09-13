@@ -2,8 +2,7 @@ import { Stack, useRouter} from "expo-router";
 import "./global.css"
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import { Text } from "react-native";
-import {PaperProvider} from "react-native-paper";
-import { Button } from 'react-native-paper';
+import {PaperProvider, Button} from "react-native-paper";
 
 export default function RootLayout() {
 

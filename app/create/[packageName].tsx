@@ -148,15 +148,15 @@ const CreateAlert = () => {
                         <View>
                             <Text className="text-lg font-bold">HTTP Method</Text>
                             <Picker
-                                style={styles.textBlack}
-                                className="w-full border border-gray-200 rounded-md p-2"
+                                prompt={"Select HTTP method"}
+                                dropdownIconColor="black"
                                 selectedValue={httpMethod}
                                 onValueChange={handleHttpMethodChange}
                             >
                                 {
                                     Object.keys(HttpMethod).map((method: string) => {
                                         return (
-                                            <Picker.Item style={styles.textBlack} key={method} label={method} value={method} />
+                                            <Picker.Item color="black" style={{backgroundColor: "inherit"}} key={method} label={method} value={method} />
                                         )
                                     })
                                 }
@@ -206,7 +206,7 @@ const CreateAlert = () => {
                                                 autoCapitalize="none"
                                                 keyboardType="default"
                                             />
-                                            <Button mode="contained-tonal" onPress={() => removePayloadField(index)} className="p-2 w-full flex items-center justify-center bg-red-500 rounded-md">
+                                            <Button mode="contained-tonal" style={styles.widthFull} onPress={() => removePayloadField(index)}>
                                                - Remove field
                                             </Button>
                                         </View>
@@ -222,10 +222,10 @@ const CreateAlert = () => {
                     </Surface>
 
                     <View className="flex flex-col items-center justify-center w-full gap-2 mb-[20vw]">
-                        <Button mode="contained"  onPress={onSubmit} className="flex flex-row items-center justify-center p-2 rounded-xl w-full">
+                        <Button mode="contained" style={styles.widthFull} onPress={onSubmit} >
                             Save
                         </Button>
-                        <Button mode="contained-tonal" style={styles.redButton} onPress={handleCancel} className="flex flex-row items-center justify-center p-2 rounded-xl w-full">
+                        <Button mode="contained-tonal" style={styles.redButton} onPress={handleCancel} >
                             Cancel
                         </Button>
                     </View>
@@ -240,10 +240,11 @@ const styles = StyleSheet.create({
     redButton:{
         backgroundColor: "rgba(255,0,0,0.51)",
         color: "white",
+        width: "100%"
     },
-    textBlack:{
-        color: "black",
-    }
+    widthFull:{
+        width: "100%"
+    },
 });
 
 

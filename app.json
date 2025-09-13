@@ -4,9 +4,9 @@
     "slug": "Notiflow",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon/android/play_store_512.png",
+    "icon": "./assets/images/icon/android/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
     "scheme": "notiflow",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
@@ -35,7 +35,12 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-background-task",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon/96x96.png"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,10 +1,10 @@
-import {ActivityIndicator, FlatList, Pressable, Text, View} from "react-native";
+import {FlatList, Pressable, Text, View} from "react-native";
 import {useEffect, useRef, useState} from "react";
 import AppDetail from "@/types/storage/AppDetailType";
 import {Link} from "expo-router";
 import useAppList from "@/hooks/use-app-list";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {Surface, Searchbar, Avatar, Switch} from 'react-native-paper';
+import {ActivityIndicator, Surface, Searchbar, Avatar, Switch} from 'react-native-paper';
 
 const SelectPackage = () => {
 
