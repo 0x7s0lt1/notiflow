@@ -92,6 +92,7 @@ const SelectPackage = () => {
                 </View> :
                 <FlatList
                     className={"mt-2 p-2 w-full"}
+                    contentContainerStyle={{ paddingBottom: 20 }}
                     data={filteredApps}
                     ListEmptyComponent={<Text className={"text-center text-gray-500"}>No apps found</Text>}
                     renderItem={ (i: any) =>  {
